@@ -9,6 +9,7 @@ const App = () => {
     <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quam, et distinctio magnam provident architecto nobis. Odit porro placeat optio iure, mollitia, vitae aspernatur, eveniet molestiae iste provident voluptate quisquam. Necessitatibus.</p>
     
     <h3>I just added a new Heading</h3>
+    <p>I think we should update the test what do you think?</p>
     </>
   )
 }
