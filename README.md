@@ -1,4 +1,5 @@
-^(?![^A-Za-z0-9]*$)(?!.*[^A-Za-z0-9- ])[A-Za-z0-9- ]{1,15}$|^[A-Za-z0-9]{1,10} [A-Za-z0-9]{1,10}$
+^[a-zA-Z][a-zA-Z0-9]*-[a-zA-Z0-9]*[a-zA-Z0-9]$
+
 
 
 In the project directory, you can run:
