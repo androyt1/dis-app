@@ -1,8 +1,5 @@
-# Getting Started with Create React App
+^(?![^A-Za-z0-9]*$)(?!.*[^A-Za-z0-9- ])[A-Za-z0-9- ]{1,15}$|^[A-Za-z0-9]{1,10} [A-Za-z0-9]{1,10}$
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
 
 In the project directory, you can run:
 
