@@ -1,3 +1,42 @@
+import React, { useState, useEffect } from 'react';
+
+function ErrorMessage(props) {
+  const { message, showError } = props;
+
+  const [isVisible, setIsVisible] = useState(showError);
+
+  useEffect(() => {
+    setIsVisible(showError);
+  }, [showError]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(false);
+    }, 5000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [showError]);
+
+  return (
+    <>
+      {isVisible && (
+        <div className="error-message">
+          {message}
+        </div>
+      )}
+    </>
+  );
+}
+
+export default ErrorMessage;
+
+
+
+
+
+
 ^(
 \b([a-zA-Z]{4,})(?<=^[a-zA-Z]{4,}.{0,15})\b|\b([a-zA-Z]+-[a-zA-Z]+)\b|\b([a-zA-Z]+\s&\s[a-zA-Z]+)\b|\b([a-zA-Z]+[0-9]+)\b
 
