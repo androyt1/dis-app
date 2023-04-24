@@ -34,6 +34,27 @@ export default ErrorMessage;
 
 
 
+import React, { useState } from 'react';
+import ErrorMessage from './ErrorMessage';
+
+function ExampleComponent(props) {
+  const [inputValue, setInputValue] = useState('');
+  const [showError, setShowError] = useState(false);
+
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+    setShowError(event.target.value.trim() === '');
+  };
+
+  return (
+    <>
+      <input type="text" value={inputValue} onChange={handleInputChange} />
+      <ErrorMessage message="Input cannot be empty" showError={showError} />
+    </>
+  );
+}
+
+export default ExampleComponent;
 
 
 
