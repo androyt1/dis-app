@@ -1,55 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import InfiniteScroll from 'react-infinite-scroll-component';
 
-const PokemonList = () => {
-  const [pokemonList, setPokemonList] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [offset, setOffset] = useState(0);
+function InfiniteScrollComponent() {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetchPokemon();
-  }, []);
-
-  const fetchPokemon = () => {
-    axios
-      .get(`https://pokeapi.co/api/v2/pokemon?limit=20&offset=${offset}`)
-      .then(response => {
-        const newPokemonList = response.data.results;
-        setPokemonList(prevList => [...prevList, ...newPokemonList]);
-
-        if (response.data.next) {
-          setOffset(prevOffset => prevOffset + 20);
-        } else {
-          setHasMore(false);
-        }
-      })
-      .catch(error => {
-        console.log('Error fetching data:', error);
-      });
+  // Your API call function
+  const fetchData = async () => {
+    setLoading(true);
+    // Make your API call here and append the response data to existing data
+    // Example: const response = await fetch('your-api-endpoint');
+    //          const newData = await response.json();
+    //          setData(prevData => [...prevData, ...newData]);
+    setLoading(false);
   };
 
-  const renderPokemon = () => {
-    return pokemonList.map((pokemon, index) => (
-      <div key={index}>
-        <h3>{pokemon.name}</h3>
-      </div>
-    ));
+  // useEffect hook to fetch data when the component mounts
+  useEffect(() => {
+    fetchData();
+  }, []);
+  
+  // Function to handle scroll event
+  const handleScroll = () => {
+    // Calculate the scroll position
+    const { scrollTop, clientHeight, scrollHeight } = event.target;
+    const isAtBottom = scrollTop + clientHeight === scrollHeight;
+
+    // Fetch more data if the user has reached the bottom and data is not already loading
+    if (isAtBottom && !loading) {
+      fetchData();
+    }
   };
 
   return (
-    <InfiniteScroll
-      dataLength={pokemonList.length}
-      next={fetchPokemon}
-      hasMore={hasMore}
-      loader={<h4>Loading...</h4>}
-      endMessage={<p>No more Pokémon to display.</p>}
-      scrollThreshold={0.8}
-      key={offset}
+    <div
+      style={{ height: '400px', overflowY: 'scroll' }}
+      onScroll={handleScroll}
     >
-      {renderPokemon()}
-    </InfiniteScroll>
-  );
-};
+      {/* Render your data here */}
+      {data.map(item => (
+        <div key={item.id}>{item.text}</div>
+      ))}
 
-export default PokemonList;
+      {/* Render a loading indicator if data is still being fetched */}
+      {loading && <div>Loading...</div>}
+    </div>
+  );
+}
+
+export default InfiniteScrollComponent;
+                
