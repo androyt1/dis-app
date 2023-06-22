@@ -1,59 +1,87 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
+import "./App.css";
 
-function InfiniteScrollComponent() {
+let timer;
+const App = () => {
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const observer = useRef();
 
-  // Your API call function
-  const fetchData = async () => {
-    setLoading(true);
-    // Make your API call here with the page number
-    // Example: const response = await fetch(`your-api-endpoint?page=${page}`);
-    //          const newData = await response.json();
-    //          setData(prevData => [...prevData, ...newData]);
-    setPage(prevPage => prevPage + 1);
-    setLoading(false);
+  const lastElement = (node) => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+
+    observer.current = new IntersectionObserver((entries) => {
+      console.log("in", entries);
+      if (entries[0].isIntersecting && hasMore) {
+        setPage((prevPageNumber) => prevPageNumber + 1);
+      }
+    });
+    console.log("node", node);
+    if (node) observer.current.observe(node);
   };
 
-  // useEffect hook to fetch data when the component mounts and when the page changes
+  console.log("oberser", observer);
+
   useEffect(() => {
-    fetchData();
-  }, [page]);
+    setData([]);
+  }, [query]);
 
-  // Function to handle scroll event
-  const handleScroll = event => {
-    const { scrollTop, clientHeight, scrollHeight } = event.target;
+  useEffect(() => {
+    setLoading(true);
+    const getSearchItems = async () => {
+      const shows = await axios.get(
+        `http://openlibrary.org/search.json?title=${query}&page=${page}`
+      );
+      setLoading(false);
+      setHasMore(shows.data.docs.length > 0);
+      setData((prevBooks) => {
+        return [
+          ...new Set([...prevBooks, ...shows.data.docs.map((b) => b.title)]),
+        ];
+      });
+    };
 
-    // Calculate if the user has reached the top or bottom of the div
-    const isAtTop = scrollTop === 0;
-    const isAtBottom = scrollTop + clientHeight === scrollHeight;
+    getSearchItems();
+  }, [query, page]);
 
-    // Fetch previous page if the user has reached the top and the current page is not the first page
-    if (isAtTop && page > 1 && !loading) {
-      setPage(prevPage => prevPage - 1);
+  const handleChange = (e) => {
+    if (timer) {
+      clearTimeout(timer);
     }
-
-    // Fetch next page if the user has reached the bottom and data is not already loading
-    if (isAtBottom && !loading) {
-      fetchData();
-    }
+    timer = setTimeout(() => {
+      setQuery(e.target.value);
+      setPage(1);
+    }, 1000);
   };
 
   return (
-    <div
-      style={{ height: '400px', overflowY: 'scroll' }}
-      onScroll={handleScroll}
-    >
-      {/* Render your data here */}
-      {data.map(item => (
-        <div key={item.id}>{item.text}</div>
-      ))}
+    <div className="searchContainer">
+      <input type="text" onChange={(e) => handleChange(e)} />
 
-      {/* Render a loading indicator if data is still being fetched */}
-      {loading && <div>Loading...</div>}
+      {data.map((book, index) => {
+        if (data.length === index + 1) {
+          return (
+            <div className="searchtitle" ref={lastElement} key={book}>
+              {book}
+            </div>
+          );
+        } else {
+          return (
+            <div className="searchtitle" key={book}>
+              {book}
+            </div>
+          );
+        }
+      })}
+      <div>{loading && "Loading..."}</div>
+      {/* <div>{error && 'Error'}</div> */}
     </div>
   );
-}
+};
 
-export default InfiniteScrollComponent;
+export default App;
