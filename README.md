@@ -1,33 +1,21 @@
+function getAllValues(jsonObj) {
+  let values = [];
 
-function getQueryParams() {
-  const searchParams = new URLSearchParams(window.location.search);
-  const params = {};
-
-  for (let param of searchParams.entries()) {
-    const [key, value] = param;
-    params[key] = value;
+  function traverse(obj) {
+    if (typeof obj === "object" && obj !== null) {
+      if (Array.isArray(obj)) {
+        obj.forEach(item => {
+          traverse(item);
+        });
+      } else {
+        Object.values(obj).forEach(value => {
+          values.push(value);
+          traverse(value);
+        });
+      }
+    }
   }
 
-  return params;
-}
-
-function FilterPage() {
-  const queryParams = getQueryParams();
-  const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
-
-  useEffect(() => {
-    const checkboxValues = Object.keys(queryParams).filter((key) => queryParams[key] === 'true');
-    setSelectedCheckboxes(checkboxValues);
-  }, []);
-
-  const handleCheckboxChange = (event) => {
-    const checkboxValue = event.target.value;
-    if (event.target.checked) {
-      setSelectedCheckboxes((prevCheckboxes) => [...prevCheckboxes, checkboxValue]);
-    } else {
-      setSelectedCheckboxes((prevCheckboxes) => prevCheckboxes.filter((value) => value !== checkboxValue));
-    }
-  };
-
-  // Rest of the component code
+  traverse(jsonObj);
+  return values;
 }
