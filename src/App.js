@@ -18,6 +18,9 @@ function getChildProperties(json, prefix = '') {
               }
             }
           }
+        } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+          const nestedPrefix = prefix ? `${prefix}.${key}` : key;
+          traverseObject(value, nestedPrefix);
         }
       }
     }
