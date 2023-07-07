@@ -1,28 +1,26 @@
-function getChildProperties(json) {
+function getChildProperties(json, prefix = '') {
   const properties = [];
 
-  function traverseObject(obj, prefix = '') {
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        const value = obj[key];
+  for (const key in json) {
+    if (json.hasOwnProperty(key)) {
+      const value = json[key];
 
-        if (key === 'properties') {
-          for (const childKey in value) {
-            if (value.hasOwnProperty(childKey)) {
-              const childValue = value[childKey];
-              if (childKey === 'properties' && typeof childValue === 'object' && !Array.isArray(childValue)) {
-                traverseObject(childValue, prefix);
-              } else {
-                properties.push(prefix + childKey);
-              }
+      if (key === 'properties') {
+        for (const childKey in value) {
+          if (value.hasOwnProperty(childKey)) {
+            const childValue = value[childKey];
+            if (childValue.hasOwnProperty('properties')) {
+              const nestedPrefix = prefix ? `${prefix}.${childKey}` : childKey;
+              const nestedProperties = getChildProperties(childValue.properties, nestedPrefix);
+              properties.push(...nestedProperties);
+            } else {
+              properties.push(`${prefix}${childKey}`);
             }
           }
         }
       }
     }
   }
-
-  traverseObject(json);
 
   return properties;
 }
