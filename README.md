@@ -1,25 +1,11 @@
-function getChildProperties(json) {
-  const properties = [];
+function displayTextOnAvailableSpace(divId, text) {
+  const div = document.getElementById(divId);
+  const divWidth = div.clientWidth;
+  let content = text;
 
-  function traverseObject(obj) {
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        const value = obj[key];
-
-        if (key === 'properties' && typeof value === 'object') {
-          for (const propKey in value) {
-            if (value.hasOwnProperty(propKey)) {
-              properties.push(propKey);
-            }
-          }
-        } else if (typeof value === 'object') {
-          traverseObject(value);
-        }
-      }
-    }
+  while (div.scrollWidth > divWidth && content.length > 0) {
+    content = content.substring(0, content.length - 1);
   }
 
-  traverseObject(json);
-
-  return properties;
+  div.innerText = content;
 }
