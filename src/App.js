@@ -1,28 +1,31 @@
-.resizable-div {
-  width: 100%;
-  /* Set desired height and other styles for the resizable div */
-}
 
-.ellipsis-container {
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+function getChildProperties(json) {
+  const properties = [];
 
-.ellipsis-content {
-  display: inline-block;
-  /* Add other desired styles for the content within the ellipsis container */
-}
+  function traverseObject(obj, prefix = '') {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const value = obj[key];
 
-function ResizableDiv() {
-  return (
-    <div className="resizable-div">
-      <div className="ellipsis-container">
-        <div className="ellipsis-content">
-          This is some long text that needs to fit the available space with an ellipsis at the end if necessary.
-        </div>
-      </div>
-    </div>
-  );
+        if (key === 'properties') {
+          for (const childKey in value) {
+            if (value.hasOwnProperty(childKey)) {
+              const childValue = value[childKey];
+              if (childValue.hasOwnProperty('properties')) {
+                traverseObject(childValue.properties, prefix + childKey + '.');
+              } else {
+                properties.push(prefix + childKey);
+              }
+            }
+          }
+        } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+          traverseObject(value, prefix + key + '.');
+        }
+      }
+    }
+  }
+
+  traverseObject(json);
+
+  return properties;
 }
