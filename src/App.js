@@ -1,3 +1,9 @@
+.line-with-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 import React, { useEffect, useRef } from 'react';
 import './ResizableDiv.css';
 
