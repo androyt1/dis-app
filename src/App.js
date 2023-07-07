@@ -1,4 +1,3 @@
-
 function getChildProperties(json) {
   const properties = [];
 
@@ -11,15 +10,13 @@ function getChildProperties(json) {
           for (const childKey in value) {
             if (value.hasOwnProperty(childKey)) {
               const childValue = value[childKey];
-              if (childValue.hasOwnProperty('properties')) {
-                traverseObject(childValue.properties, prefix + childKey + '.');
+              if (childKey === 'properties' && typeof childValue === 'object' && !Array.isArray(childValue)) {
+                traverseObject(childValue, prefix);
               } else {
                 properties.push(prefix + childKey);
               }
             }
           }
-        } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-          traverseObject(value, prefix + key + '.');
         }
       }
     }
