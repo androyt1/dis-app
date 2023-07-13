@@ -1,11 +1,26 @@
-function displayTextOnAvailableSpace(divId, text) {
-  const div = document.getElementById(divId);
-  const divWidth = div.clientWidth;
-  let content = text;
+const getObjectValue = (obj, path) => {
+  const keys = path.split('.'); // Split the path into an array of property keys
 
-  while (div.scrollWidth > divWidth && content.length > 0) {
-    content = content.substring(0, content.length - 1);
-  }
+  // Recursive function to traverse the object using the property keys
+  const getValue = (currentObj, currentKeys) => {
+    // Base case: If there are no more keys, return the value
+    if (currentKeys.length === 0) {
+      return currentObj;
+    }
 
-  div.innerText = content;
-}
+    const key = currentKeys[0]; // Get the next property key
+    const nextObj = currentObj[key]; // Access the property in the current object
+
+    // If the next object is undefined, return undefined
+    if (nextObj === undefined) {
+      return undefined;
+    }
+
+    // Recursively call the function with the next object and remaining keys
+    return getValue(nextObj, currentKeys.slice(1));
+  };
+
+  return getValue(obj, keys);
+};
+
+
