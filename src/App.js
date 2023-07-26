@@ -1,29 +1,77 @@
-function getNestedPropertiesNames(obj) {
-    let propertyNames = [];
-  
-    function traverse(obj, path = '') {
-      if (typeof obj !== 'object' || obj === null) {
-        return;
-      }
-  
-      if ('properties' in obj) {
-        for (let key in obj.properties) {
-          if (typeof obj.properties[key] === 'object' && obj.properties[key] !== null) {
-            let newPath = path ? `${path}.${key}` : key;
-            if (key !== 'nested') {
-              propertyNames.push(newPath);
-            }
-            traverse(obj.properties[key], newPath);
-          }
+import React, { useState, useEffect } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
+
+const MyComponent = () => {
+  const [data, setData] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const ITEMS_PER_PAGE = 10;
+  const specificCheckboxId = 'your_specific_checkbox_id'; // Get this value from the URL parameters
+
+  // Function to search the API for the specific data
+  const searchSpecificData = () => {
+    // Implement your API search logic here
+    // Example using fetch API:
+    fetch(`/api/data/${specificCheckboxId}`)
+      .then((response) => response.json())
+      .then((specificData) => {
+        if (specificData) {
+          // Specific checkbox data found, append it at the top
+          setData([specificData, ...data]);
         }
-      } else {
-        for (let key in obj) {
-          let newPath = path ? `${path}.${key}` : key;
-          traverse(obj[key], newPath);
+        // Regardless of the result, make the regular request for pagination
+        fetchMoreData();
+      })
+      .catch((error) => {
+        // Handle the error if needed
+        console.error('Error searching for specific data:', error);
+        // Still make the regular request for pagination
+        fetchMoreData();
+      });
+  };
+
+  // Function to fetch more data from the API
+  const fetchMoreData = () => {
+    // Implement your API fetch logic here to get the next chunk of data
+    // Example using fetch API:
+    fetch(`/api/data?start=${data.length}&limit=${ITEMS_PER_PAGE}`)
+      .then((response) => response.json())
+      .then((newData) => {
+        if (newData.length === 0) {
+          // No more data available, set hasMore to false
+          setHasMore(false);
+        } else {
+          // Append the new data to the existing data array
+          setData([...data, ...newData]);
         }
-      }
-    }
-  
-    traverse(obj);
-    return propertyNames;
-  }
+      })
+      .catch((error) => {
+        // Handle the error if needed
+        console.error('Error fetching data:', error);
+      });
+  };
+
+  useEffect(() => {
+    // Search for the specific data on component mount
+    searchSpecificData();
+  }, []);
+
+  return (
+    <InfiniteScroll
+      dataLength={data.length}
+      next={fetchMoreData}
+      hasMore={hasMore}
+      loader={<h4>Loading...</h4>}
+    >
+      {/* Render your checkboxes here */}
+      {data.map((item) => (
+        <div key={item.id}>
+          <input type="checkbox" id={item.id} checked={item.id === specificCheckboxId} />
+          <label htmlFor={item.id}>{item.label}</label>
+        </div>
+      ))}
+    </InfiniteScroll>
+  );
+};
+
+export default MyComponent;
+          
