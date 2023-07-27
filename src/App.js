@@ -1,77 +1,112 @@
-import React, { useState, useEffect } from 'react';
-import InfiniteScroll from 'react-infinite-scroll-component';
+import React, { useState } from 'react';
+import CustomComponent from './CustomComponent';
 
-const MyComponent = () => {
-  const [data, setData] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
-  const ITEMS_PER_PAGE = 10;
-  const specificCheckboxId = 'your_specific_checkbox_id'; // Get this value from the URL parameters
+const ParentComponent = () => {
+  // State to track the checked states of checkboxes
+  const [component1Checked, setComponent1Checked] = useState({});
+  const [component2Checked, setComponent2Checked] = useState({});
+  const [component3Checked, setComponent3Checked] = useState({});
+  const [component4Checked, setComponent4Checked] = useState({});
 
-  // Function to search the API for the specific data
-  const searchSpecificData = () => {
-    // Implement your API search logic here
-    // Example using fetch API:
-    fetch(`/api/data/${specificCheckboxId}`)
-      .then((response) => response.json())
-      .then((specificData) => {
-        if (specificData) {
-          // Specific checkbox data found, append it at the top
-          setData([specificData, ...data]);
-        }
-        // Regardless of the result, make the regular request for pagination
-        fetchMoreData();
-      })
-      .catch((error) => {
-        // Handle the error if needed
-        console.error('Error searching for specific data:', error);
-        // Still make the regular request for pagination
-        fetchMoreData();
-      });
+  // Function to update the checked state of checkboxes for each component
+  const handleCheckboxChange = (componentId, itemId, isChecked) => {
+    switch (componentId) {
+      case 1:
+        setComponent1Checked((prevState) => ({ ...prevState, [itemId]: isChecked }));
+        break;
+      case 2:
+        setComponent2Checked((prevState) => ({ ...prevState, [itemId]: isChecked }));
+        break;
+      case 3:
+        setComponent3Checked((prevState) => ({ ...prevState, [itemId]: isChecked }));
+        break;
+      case 4:
+        setComponent4Checked((prevState) => ({ ...prevState, [itemId]: isChecked }));
+        break;
+      default:
+        break;
+    }
   };
 
-  // Function to fetch more data from the API
-  const fetchMoreData = () => {
-    // Implement your API fetch logic here to get the next chunk of data
-    // Example using fetch API:
-    fetch(`/api/data?start=${data.length}&limit=${ITEMS_PER_PAGE}`)
-      .then((response) => response.json())
-      .then((newData) => {
-        if (newData.length === 0) {
-          // No more data available, set hasMore to false
-          setHasMore(false);
-        } else {
-          // Append the new data to the existing data array
-          setData([...data, ...newData]);
-        }
-      })
-      .catch((error) => {
-        // Handle the error if needed
-        console.error('Error fetching data:', error);
-      });
-  };
+  // Function to get the total number of checkboxes and the sum total of checked checkboxes for each component
+  const getCheckboxStats = (componentId) => {
+    let totalCheckboxes = 0;
+    let totalChecked = 0;
 
-  useEffect(() => {
-    // Search for the specific data on component mount
-    searchSpecificData();
-  }, []);
+    switch (componentId) {
+      case 1:
+        Object.values(component1Checked).forEach((isChecked) => {
+          totalCheckboxes++;
+          if (isChecked) totalChecked++;
+        });
+        break;
+      case 2:
+        Object.values(component2Checked).forEach((isChecked) => {
+          totalCheckboxes++;
+          if (isChecked) totalChecked++;
+        });
+        break;
+      case 3:
+        Object.values(component3Checked).forEach((isChecked) => {
+          totalCheckboxes++;
+          if (isChecked) totalChecked++;
+        });
+        break;
+      case 4:
+        Object.values(component4Checked).forEach((isChecked) => {
+          totalCheckboxes++;
+          if (isChecked) totalChecked++;
+        });
+        break;
+      default:
+        break;
+    }
+
+    return { totalCheckboxes, totalChecked };
+  };
 
   return (
-    <InfiniteScroll
-      dataLength={data.length}
-      next={fetchMoreData}
-      hasMore={hasMore}
-      loader={<h4>Loading...</h4>}
-    >
-      {/* Render your checkboxes here */}
-      {data.map((item) => (
-        <div key={item.id}>
-          <input type="checkbox" id={item.id} checked={item.id === specificCheckboxId} />
-          <label htmlFor={item.id}>{item.label}</label>
-        </div>
-      ))}
-    </InfiniteScroll>
+    <div>
+      <CustomComponent
+        componentId={1}
+        checkboxesData={/* Your data for component 1 from API response */}
+        checkedItems={component1Checked}
+        onCheckboxChange={handleCheckboxChange}
+      />
+      <CustomComponent
+        componentId={2}
+        checkboxesData={/* Your data for component 2 from API response */}
+        checkedItems={component2Checked}
+        onCheckboxChange={handleCheckboxChange}
+      />
+      <CustomComponent
+        componentId={3}
+        checkboxesData={/* Your data for component 3 from API response */}
+        checkedItems={component3Checked}
+        onCheckboxChange={handleCheckboxChange}
+      />
+      <CustomComponent
+        componentId={4}
+        checkboxesData={/* Your data for component 4 from API response */}
+        checkedItems={component4Checked}
+        onCheckboxChange={handleCheckboxChange}
+      />
+
+      {/* Display checkbox stats */}
+      <div>
+        Component 1 - Total Checkboxes: {getCheckboxStats(1).totalCheckboxes}, Checked: {getCheckboxStats(1).totalChecked}
+      </div>
+      <div>
+        Component 2 - Total Checkboxes: {getCheckboxStats(2).totalCheckboxes}, Checked: {getCheckboxStats(2).totalChecked}
+      </div>
+      <div>
+        Component 3 - Total Checkboxes: {getCheckboxStats(3).totalCheckboxes}, Checked: {getCheckboxStats(3).totalChecked}
+      </div>
+      <div>
+        Component 4 - Total Checkboxes: {getCheckboxStats(4).totalCheckboxes}, Checked: {getCheckboxStats(4).totalChecked}
+      </div>
+    </div>
   );
 };
 
-export default MyComponent;
-          
+export default ParentComponent;
