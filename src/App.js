@@ -1,18 +1,10 @@
 function formatDateToLocale(dateString) {
-  // Parse the provided date string to a Date object
-  const date = new Date(dateString);
-
-  // Check if the parsed date is valid
-  if (isNaN(date)) {
-    throw new Error('Invalid date string');
-  }
-
-  // Get the user's locale from the browser, default to UK if not available
-  const userLocale = navigator.language || 'en-GB';
-
-  // Check if the input date string is in the '2023-07-25T16:51:43.647Z' format
+  // Check if the input date string is in the ISO 8601 format
   const isoDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
   if (isoDateRegex.test(dateString)) {
+    // Get the user's locale from the browser, default to UK if not available
+    const userLocale = navigator.language || 'en-GB';
+
     // Convert the ISO date string to a Date object
     const isoDate = new Date(dateString);
 
@@ -35,6 +27,17 @@ function formatDateToLocale(dateString) {
 
     return formattedISODate;
   } else {
+    // Parse the provided date string to a Date object
+    const date = new Date(dateString);
+
+    // Check if the parsed date is valid
+    if (isNaN(date)) {
+      throw new Error('Invalid date string');
+    }
+
+    // Get the user's locale from the browser, default to UK if not available
+    const userLocale = navigator.language || 'en-GB';
+
     // Create a locale-specific date formatter for the input date
     const dateFormatter = new Intl.DateTimeFormat(userLocale, {
       day: '2-digit',
