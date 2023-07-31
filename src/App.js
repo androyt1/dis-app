@@ -1,112 +1,57 @@
-import React, { useState } from 'react';
-import CustomComponent from './CustomComponent';
+function formatDateToLocale(dateString) {
+  // Parse the provided date string to a Date object
+  const date = new Date(dateString);
 
-const ParentComponent = () => {
-  // State to track the checked states of checkboxes
-  const [component1Checked, setComponent1Checked] = useState({});
-  const [component2Checked, setComponent2Checked] = useState({});
-  const [component3Checked, setComponent3Checked] = useState({});
-  const [component4Checked, setComponent4Checked] = useState({});
+  // Check if the parsed date is valid
+  if (isNaN(date)) {
+    throw new Error('Invalid date string');
+  }
 
-  // Function to update the checked state of checkboxes for each component
-  const handleCheckboxChange = (componentId, itemId, isChecked) => {
-    switch (componentId) {
-      case 1:
-        setComponent1Checked((prevState) => ({ ...prevState, [itemId]: isChecked }));
-        break;
-      case 2:
-        setComponent2Checked((prevState) => ({ ...prevState, [itemId]: isChecked }));
-        break;
-      case 3:
-        setComponent3Checked((prevState) => ({ ...prevState, [itemId]: isChecked }));
-        break;
-      case 4:
-        setComponent4Checked((prevState) => ({ ...prevState, [itemId]: isChecked }));
-        break;
-      default:
-        break;
-    }
-  };
+  // Get the user's locale from the browser, default to UK if not available
+  const userLocale = navigator.language || 'en-GB';
 
-  // Function to get the total number of checkboxes and the sum total of checked checkboxes for each component
-  const getCheckboxStats = (componentId) => {
-    let totalCheckboxes = 0;
-    let totalChecked = 0;
+  // Check if the input date string is in the '2023-07-25T16:51:43.647Z' format
+  const isoDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
+  if (isoDateRegex.test(dateString)) {
+    // Convert the ISO date string to a Date object
+    const isoDate = new Date(dateString);
 
-    switch (componentId) {
-      case 1:
-        Object.values(component1Checked).forEach((isChecked) => {
-          totalCheckboxes++;
-          if (isChecked) totalChecked++;
-        });
-        break;
-      case 2:
-        Object.values(component2Checked).forEach((isChecked) => {
-          totalCheckboxes++;
-          if (isChecked) totalChecked++;
-        });
-        break;
-      case 3:
-        Object.values(component3Checked).forEach((isChecked) => {
-          totalCheckboxes++;
-          if (isChecked) totalChecked++;
-        });
-        break;
-      case 4:
-        Object.values(component4Checked).forEach((isChecked) => {
-          totalCheckboxes++;
-          if (isChecked) totalChecked++;
-        });
-        break;
-      default:
-        break;
-    }
+    // Create a locale-specific date formatter for the ISO date
+    const isoDateFormatter = new Intl.DateTimeFormat(userLocale, {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false, // Use 24-hour format
+    });
 
-    return { totalCheckboxes, totalChecked };
-  };
+    // Format the ISO date using the locale-specific formatter
+    let formattedISODate = isoDateFormatter.format(isoDate);
 
-  return (
-    <div>
-      <CustomComponent
-        componentId={1}
-        checkboxesData={/* Your data for component 1 from API response */}
-        checkedItems={component1Checked}
-        onCheckboxChange={handleCheckboxChange}
-      />
-      <CustomComponent
-        componentId={2}
-        checkboxesData={/* Your data for component 2 from API response */}
-        checkedItems={component2Checked}
-        onCheckboxChange={handleCheckboxChange}
-      />
-      <CustomComponent
-        componentId={3}
-        checkboxesData={/* Your data for component 3 from API response */}
-        checkedItems={component3Checked}
-        onCheckboxChange={handleCheckboxChange}
-      />
-      <CustomComponent
-        componentId={4}
-        checkboxesData={/* Your data for component 4 from API response */}
-        checkedItems={component4Checked}
-        onCheckboxChange={handleCheckboxChange}
-      />
+    // Replace forward slashes ('/') with dashes ('-')
+    formattedISODate = formattedISODate.replace(/\//g, '-');
 
-      {/* Display checkbox stats */}
-      <div>
-        Component 1 - Total Checkboxes: {getCheckboxStats(1).totalCheckboxes}, Checked: {getCheckboxStats(1).totalChecked}
-      </div>
-      <div>
-        Component 2 - Total Checkboxes: {getCheckboxStats(2).totalCheckboxes}, Checked: {getCheckboxStats(2).totalChecked}
-      </div>
-      <div>
-        Component 3 - Total Checkboxes: {getCheckboxStats(3).totalCheckboxes}, Checked: {getCheckboxStats(3).totalChecked}
-      </div>
-      <div>
-        Component 4 - Total Checkboxes: {getCheckboxStats(4).totalCheckboxes}, Checked: {getCheckboxStats(4).totalChecked}
-      </div>
-    </div>
-  );
-};
+    return formattedISODate;
+  } else {
+    // Create a locale-specific date formatter for the input date
+    const dateFormatter = new Intl.DateTimeFormat(userLocale, {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false, // Use 24-hour format
+    });
 
-export default ParentComponent;
+    // Format the date using the locale-specific formatter
+    let formattedDate = dateFormatter.format(date);
+
+    // Replace forward slashes ('/') with dashes ('-')
+    formattedDate = formattedDate.replace(/\//g, '-');
+
+    return formattedDate;
+  }
+}
