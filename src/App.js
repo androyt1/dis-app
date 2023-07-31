@@ -1,4 +1,3 @@
-function formatDateToLocale(dateString) {
   const isoDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
   if (isoDateRegex.test(dateString)) {
     // Extract date components from ISO date string
@@ -22,9 +21,8 @@ function formatDateToLocale(dateString) {
     });
 
     // Assemble the date components for formatting
-    const isoDateToFormat = new Date(
-      Date.UTC(year, month - 1, day, hour, minute, second, milliseconds)
-    );
+    const isoDateToFormat = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
+    isoDateToFormat.setUTCMilliseconds(milliseconds);
 
     // Format the ISO date using the locale-specific formatter
     let formattedISODate = isoDateFormatter.format(isoDateToFormat);
@@ -33,8 +31,3 @@ function formatDateToLocale(dateString) {
     formattedISODate = formattedISODate.replace(/\//g, '-');
 
     return formattedISODate;
-  } else {
-    // Continue with the existing logic for non-ISO date strings
-    // ...
-  }
-}
