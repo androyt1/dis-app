@@ -1,34 +1,29 @@
-function formatDateToLocale(dateString) {
-  // Check if the provided date string is in ISO 8601 format (e.g., '2023-07-25T16:51:43.647Z')
-  const isISO8601 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/.test(dateString);
+export function formatdateByUserLocale(dateString) {
+    const dateRegex = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).(\d{3})Z$/;
+    const match = dateString.match(dateRegex);
 
-  // If the date string is in ISO 8601 format, remove the 'Z' (indicating UTC) and create a Date object
-  const date = isISO8601 ? new Date(dateString.replace('Z', '')) : new Date(dateString);
+    if (!match) {
+        throw new Error('Invalid date string');
+    }
 
-  // Check if the parsed date is valid
-  if (isNaN(date)) {
-    throw new Error('Invalid date string');
-  }
+    const [, year, month, day, hours, minutes, seconds, milliseconds] = match;
 
-  // Get the user's locale from the browser, default to UK if not available
-  const userLocale = navigator.language || 'en-GB';
+    const date = new Date(Date.UTC(year, month - 1, day, hours, minutes, seconds, milliseconds));
 
-  // Create a locale-specific date formatter
-  const dateFormatter = new Intl.DateTimeFormat(userLocale, {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false, // Use 24-hour format
-  });
+    if (isNaN(date)) {
+        throw new Error('Invalid date string');
+    }
 
-  // Format the date using the locale-specific formatter
-  let formattedDate = dateFormatter.format(date);
-
-  // Replace forward slashes ('/') with dashes ('-')
-  formattedDate = formattedDate.replace(/\//g, '-');
-
-  return formattedDate;
+    const userLocale = navigator.language || 'en-GB';
+    const dateFormatter = new Intl.DateTimeFormat(userLocale, {
+        day: 'numeric',
+        month: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
+    const formattedDate = dateFormatter.format(date).replace(/\//g, '-');
+    return formattedDate;
 }
