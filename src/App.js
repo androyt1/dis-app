@@ -1,29 +1,32 @@
-export function formatdateByUserLocale(dateString) {
-    const dateRegex = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).(\d{3})Z$/;
-    const match = dateString.match(dateRegex);
+// DataDisplay.test.js
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import axios from "axios";
+import MockAdapter from "axios-mock-adapter";
+import DataDisplay from "./DataDisplay";
 
-    if (!match) {
-        throw new Error('Invalid date string');
-    }
+describe("DataDisplay component", () => {
+  // Create an instance of the axios mock adapter
+  const mock = new MockAdapter(axios);
 
-    const [, year, month, day, hours, minutes, seconds, milliseconds] = match;
+  beforeEach(() => {
+    // Mock the API response with sample data
+    const mockData = [
+      { id: 1, name: "Item 1" },
+      { id: 2, name: "Item 2" },
+    ];
+    mock.onGet("/api/data").reply(200, mockData);
 
-    const date = new Date(Date.UTC(year, month - 1, day, hours, minutes, seconds, milliseconds));
+    // Render the component
+    render(<DataDisplay />);
+  });
 
-    if (isNaN(date)) {
-        throw new Error('Invalid date string');
-    }
+  it("should display data from the API correctly", async () => {
+    // Wait for the API request to complete (you might not need this if the data is loaded synchronously)
+    await screen.findByText("Data Display");
 
-    const userLocale = navigator.language || 'en-GB';
-    const dateFormatter = new Intl.DateTimeFormat(userLocale, {
-        day: 'numeric',
-        month: 'numeric',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-    });
-    const formattedDate = dateFormatter.format(date).replace(/\//g, '-');
-    return formattedDate;
-}
+    // Assert that the data is displayed correctly in the component
+    expect(screen.getByText("Item 1")).toBeInTheDocument();
+    expect(screen.getByText("Item 2")).toBeInTheDocument();
+  });
+});
