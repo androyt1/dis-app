@@ -1,61 +1,49 @@
-// Import necessary dependencies and components
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-import YourComponent from './YourComponent';
+// Sample test file: MyComponent.test.js
 
-const mock = new MockAdapter(axios);
+import React from 'react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
+import axios from 'axios'; // Mocked automatically by Jest
 
-// Mock the successful API response
-mock.onGet('/api/data').reply(200, {
-  data: [/* your sample data here */],
+import MyComponent from './MyComponent'; // Replace with the actual import path of your component
+
+jest.mock('axios'); // Mock axios to prevent actual API calls
+
+test('renders API response data in the table on page load', async () => {
+  const mockedApiResponse = {
+    data: [
+      { id: 1, name: 'Item 1', price: 10 },
+      { id: 2, name: 'Item 2', price: 20 },
+    ],
+  };
+
+  axios.get.mockResolvedValue(mockedApiResponse);
+
+  const { getByText } = render(<MyComponent />);
+
+  // Check if the table contains the expected data after API response
+  await waitFor(() => {
+    expect(getByText('Item 1')).toBeInTheDocument();
+    expect(getByText('Item 2')).toBeInTheDocument();
+  });
 });
 
-// Mock the API response failure
-mock.onGet('/api/data').reply(500);
+test('updates the table on text input', async () => {
+  const mockedApiResponse = {
+    data: [
+      { id: 3, name: 'Item 3', price: 30 },
+    ],
+  };
 
-// Mock the server-side search API
-mock.onGet('/api/search').reply(200, {
-  results: [/* your sample search results here */],
-});
+  axios.get.mockResolvedValue(mockedApiResponse);
 
-// Test scenarios
-describe('YourComponent', () => {
-  test('displays data from API response', async () => {
-    // Render the component
-    render(<YourComponent />);
+  const { getByLabelText, getByText } = render(<MyComponent />);
 
-    // Wait for the API call to resolve (you may need to add a loading state check)
-    await waitFor(() => expect(screen.getByText('Data from API')).toBeInTheDocument());
+  // Simulate user input in the text box
+  const input = getByLabelText('Search');
+  fireEvent.change(input, { target: { value: 'search query' } });
 
-    // Assert that the data is displayed correctly in the component
-    expect(screen.getByText('Sample Data 1')).toBeInTheDocument();
-    expect(screen.getByText('Sample Data 2')).toBeInTheDocument();
-    // Add more assertions as needed
-  });
-
-  test('displays error message on API failure', async () => {
-    // Render the component
-    render(<YourComponent />);
-
-    // Wait for the API call to fail (you may need to add a loading state check)
-    await waitFor(() => expect(screen.getByText('Error retrieving data.')).toBeInTheDocument());
-  });
-
-  test('displays search results correctly', async () => {
-    // Render the component
-    render(<YourComponent />);
-
-    // Get the search input textbox and type a query
-    const searchInput = screen.getByPlaceholderText('Search...');
-    fireEvent.change(searchInput, { target: { value: 'sample query' } });
-
-    // Wait for the server-side search to resolve (you may need to add a loading state check)
-    await waitFor(() => expect(screen.getByText('Search Results')).toBeInTheDocument());
-
-    // Assert that the search results are displayed correctly in the component
-    expect(screen.getByText('Sample Result 1')).toBeInTheDocument();
-    expect(screen.getByText('Sample Result 2')).toBeInTheDocument();
-    // Add more assertions as needed
+  // Check if the table contains the updated data after API response
+  await waitFor(() => {
+    expect(getByText('Item 3')).toBeInTheDocument();
   });
 });
