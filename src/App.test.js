@@ -1,49 +1,32 @@
-// Sample test file: MyComponent.test.js
+function convertDate(createdDate) {
+  const date = new Date(createdDate);
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear().toString();
+  return `${day}/${month}/${year}`;
+}
 
-import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react';
-import axios from 'axios'; // Mocked automatically by Jest
-
-import MyComponent from './MyComponent'; // Replace with the actual import path of your component
-
-jest.mock('axios'); // Mock axios to prevent actual API calls
-
-test('renders API response data in the table on page load', async () => {
-  const mockedApiResponse = {
-    data: [
-      { id: 1, name: 'Item 1', price: 10 },
-      { id: 2, name: 'Item 2', price: 20 },
-    ],
-  };
-
-  axios.get.mockResolvedValue(mockedApiResponse);
-
-  const { getByText } = render(<MyComponent />);
-
-  // Check if the table contains the expected data after API response
-  await waitFor(() => {
-    expect(getByText('Item 1')).toBeInTheDocument();
-    expect(getByText('Item 2')).toBeInTheDocument();
+describe('convertDate', () => {
+  it('converts a valid date string to formatted date', () => {
+    const inputDate = '2023-08-06T10:30:00Z';
+    const expectedOutput = '06/08/2023';
+    const result = convertDate(inputDate);
+    expect(result).toBe(expectedOutput);
   });
-});
 
-test('updates the table on text input', async () => {
-  const mockedApiResponse = {
-    data: [
-      { id: 3, name: 'Item 3', price: 30 },
-    ],
-  };
-
-  axios.get.mockResolvedValue(mockedApiResponse);
-
-  const { getByLabelText, getByText } = render(<MyComponent />);
-
-  // Simulate user input in the text box
-  const input = getByLabelText('Search');
-  fireEvent.change(input, { target: { value: 'search query' } });
-
-  // Check if the table contains the updated data after API response
-  await waitFor(() => {
-    expect(getByText('Item 3')).toBeInTheDocument();
+  it('pads single-digit day and month with leading zero', () => {
+    const inputDate = '2023-05-02T10:30:00Z';
+    const expectedOutput = '02/05/2023';
+    const result = convertDate(inputDate);
+    expect(result).toBe(expectedOutput);
   });
+
+  it('handles different date formats', () => {
+    const inputDate = '2023-12-25T10:30:00Z';
+    const expectedOutput = '25/12/2023';
+    const result = convertDate(inputDate);
+    expect(result).toBe(expectedOutput);
+  });
+
+ 
 });
