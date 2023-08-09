@@ -1,21 +1,29 @@
-import React from 'react';
+import { act, renderHook } from '@testing-library/react-hooks';
 
-const CustomComponent = ({ componentId, checkboxesData, checkedItems, onCheckboxChange }) => {
-  return (
-    <div>
-      {checkboxesData.map((item) => (
-        <div key={item.id}>
-          <input
-            type="checkbox"
-            id={item.id}
-            checked={checkedItems[item.id] || false}
-            onChange={(e) => onCheckboxChange(componentId, item.id, e.target.checked)}
-          />
-          <label htmlFor={item.id}>{item.label}</label>
-        </div>
-      ))}
-    </div>
-  );
-};
 
-export default CustomComponent;
+describe('createUserStates', () => {
+  it('returns initial values for all state variables', () => {
+    const { result } = renderHook(() => createUserStates());
+
+    expect(result.current.username.value).toBe('');
+    expect(result.current.email.value).toBe('');
+    expect(result.current.firstName.value).toBe('');
+    expect(result.current.lastName.value).toBe('');
+    expect(result.current.status.value).toBe('');
+    expect(result.current.roles.value).toBe('');
+    expect(result.current.users).toEqual([]);
+  });
+
+  it('sets a new value for username', () => {
+    const { result } = renderHook(() => createUserStates());
+    const newUsername = 'john.doe';
+
+    act(() => {
+      result.current.setUserName({ value: newUsername });
+    });
+
+    expect(result.current.username.value).toBe(newUsername);
+  });
+
+ 
+});
