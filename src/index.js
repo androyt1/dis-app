@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react-hooks';
-
+import { createUserStates } from './your-module-path';
 
 describe('createUserStates', () => {
   it('returns initial values for all state variables', () => {
@@ -25,5 +25,32 @@ describe('createUserStates', () => {
     expect(result.current.username.value).toBe(newUsername);
   });
 
- 
+  it('updates users array when setUsers is called', () => {
+    const { result } = renderHook(() => createUserStates());
+    const newUsers = [{ id: 1, name: 'John' }];
+
+    act(() => {
+      result.current.setUsers(newUsers);
+    });
+
+    expect(result.current.users).toEqual(newUsers);
+  });
+
+  it('returns status options', () => {
+    const { result } = renderHook(() => createUserStates());
+
+    expect(result.current.status.statusOptions).toEqual([
+      { label: 'Active', value: 'Active' },
+      { label: 'Inactive', value: 'Inactive' },
+    ]);
+  });
+
+  it('returns role options', () => {
+    const { result } = renderHook(() => createUserStates());
+
+    expect(result.current.roles.roleOptions).toEqual([
+      // List of role options
+      // ...
+    ]);
+  });
 });
