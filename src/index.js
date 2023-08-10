@@ -1,29 +1,23 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { ProjectAlertMessage } from './ProjectAlertMessage'; // Adjust the path accordingly
+import { Header } from './Header'; // Adjust the path accordingly
 
-describe('ProjectAlertMessage component', () => {
-  test('renders correctly with "success" type', () => {
-    const { getByText } = render(
-      <ProjectAlertMessage type="success" text="Success message" />
-    );
+describe('Header component', () => {
+  test('renders correctly with "Hello" title', () => {
+    const { getByText } = render(<Header title="Hello" />);
 
-    expect(getByText('Success message')).toBeInTheDocument();
+    expect(getByText('Hello')).toBeInTheDocument();
   });
 
-  test('renders correctly with "warning" type', () => {
-    const { getByText } = render(
-      <ProjectAlertMessage type="warning" text="Warning message" />
-    );
+  test('renders correctly with "Greetings" title', () => {
+    const { getByText } = render(<Header title="Greetings" />);
 
-    expect(getByText('Warning message')).toBeInTheDocument();
+    expect(getByText('Greetings')).toBeInTheDocument();
   });
 
-  test('renders correctly with "error" type', () => {
-    const { getByText } = render(
-      <ProjectAlertMessage type="error" text="Error message" />
-    );
+  test('renders correctly with "Test Header" title', () => {
+    const { getByText } = render(<Header title="Test Header" />);
 
-    expect(getByText('Error message')).toBeInTheDocument();
+    expect(getByText('Test Header')).toBeInTheDocument();
   });
 });
