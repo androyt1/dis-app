@@ -1,23 +1,34 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { Header } from './Header'; 
+import { ProjectDetailsSubSection } from './ProjectDetailsSubSection'; 
 
-describe('Header component', () => {
-  test('renders correctly with "Hello" title', () => {
-    const { getByText } = render(<Header title="Hello" />);
+describe('ProjectDetailsSubSection component', () => {
+  test('renders correctly with loading state', () => {
+    const { getByText } = render(
+      <ProjectDetailsSubSection title="Title" value="Value" loading={true} />
+    );
 
-    expect(getByText('Hello')).toBeInTheDocument();
+    expect(getByText('Title')).toBeInTheDocument();
+    expect(getByText('Value')).toBeInTheDocument();
+    expect(getByText('Loading...')).toBeInTheDocument();
   });
 
-  test('renders correctly with "Greetings" title', () => {
-    const { getByText } = render(<Header title="Greetings" />);
+  test('renders correctly without loading state', () => {
+    const { getByText, queryByText } = render(
+      <ProjectDetailsSubSection title="Title" value="Value" loading={false} />
+    );
 
-    expect(getByText('Greetings')).toBeInTheDocument();
+    expect(getByText('Title')).toBeInTheDocument();
+    expect(getByText('Value')).toBeInTheDocument();
+    expect(queryByText('Loading...')).toBeNull();
   });
 
-  test('renders correctly with "Test Header" title', () => {
-    const { getByText } = render(<Header title="Test Header" />);
+  test('renders correctly with empty value and loading state', () => {
+    const { getByText } = render(
+      <ProjectDetailsSubSection title="Title" value="" loading={true} />
+    );
 
-    expect(getByText('Test Header')).toBeInTheDocument();
+    expect(getByText('Title')).toBeInTheDocument();
+    expect(getByText('Loading...')).toBeInTheDocument();
   });
 });
