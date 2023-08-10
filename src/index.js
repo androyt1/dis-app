@@ -1,32 +1,29 @@
-// helpers.test.js (The test file)
+import React from 'react';
+import { render } from '@testing-library/react';
+import { ProjectAlertMessage } from './ProjectAlertMessage'; // Adjust the path accordingly
 
-import { updateSteps } from './helpers';
+describe('ProjectAlertMessage component', () => {
+  test('renders correctly with "success" type', () => {
+    const { getByText } = render(
+      <ProjectAlertMessage type="success" text="Success message" />
+    );
 
-describe('updateSteps function', () => {
-  let mockSetSteps;
-  
-  beforeEach(() => {
-    mockSetSteps = jest.fn();
+    expect(getByText('Success message')).toBeInTheDocument();
   });
 
-  test('should update steps when status is "SUCESSFUL"', () => {
-    updateSteps(mockSetSteps, 'SUCESSFUL');
-    
-    expect(mockSetSteps).toHaveBeenCalledTimes(1);
-    expect(mockSetSteps).toHaveBeenCalledWith(prevState => ({
-      ...prevState,
-      stepOne: false,
-      stepTwo: true,
-    }));
+  test('renders correctly with "warning" type', () => {
+    const { getByText } = render(
+      <ProjectAlertMessage type="warning" text="Warning message" />
+    );
+
+    expect(getByText('Warning message')).toBeInTheDocument();
   });
 
-  test('should update steps when status is not "SUCESSFUL"', () => {
-    updateSteps(mockSetSteps, 'FAILURE');
-    
-    expect(mockSetSteps).toHaveBeenCalledTimes(1);
-    expect(mockSetSteps).toHaveBeenCalledWith(prevState => ({
-      ...prevState,
-      stepOne: false,
-    }));
+  test('renders correctly with "error" type', () => {
+    const { getByText } = render(
+      <ProjectAlertMessage type="error" text="Error message" />
+    );
+
+    expect(getByText('Error message')).toBeInTheDocument();
   });
 });
