@@ -1,73 +1,34 @@
-import React from 'react';
-import { render, act } from '@testing-library/react';
-import { SuccessPage } from './SuccessPage'; 
+import { updateSteps } from './updateSteps'; // Adjust the path accordingly
 
-jest.useFakeTimers(); // Mock the timers
+describe('updateSteps function', () => {
+  test('updates steps for SUCCESSFUL status', () => {
+    const setStepsMock = jest.fn();
+    const prevSteps = { stepOne: true, stepTwo: false };
+    updateSteps(setStepsMock, 'SUCCESSFUL');
 
-describe('SuccessPage component', () => {
-  test('renders correctly with success message and navigates after delay', () => {
-    const mockNavigate = jest.fn();
-    const props = {
-      url: '/new-page',
-      message: 'Success!',
-    };
-
-    // Mock the useNavigate hook
-    jest.mock('./useNavigate', () => () => mockNavigate);
-
-    render(<SuccessPage {...props} />);
-
-    expect(mockNavigate).not.toHaveBeenCalled();
-
-    // Advance timers by 3000ms
-    act(() => {
-      jest.advanceTimersByTime(3000);
+    expect(setStepsMock).toHaveBeenCalledWith({
+      ...prevSteps,
+      stepOne: false,
+      stepTwo: true,
     });
-
-    expect(mockNavigate).toHaveBeenCalledWith('/new-page');
   });
 
-  test('renders correctly with custom message and navigates after delay', () => {
-    const mockNavigate = jest.fn();
-    const props = {
-      url: '/custom-page',
-      message: 'Custom Message',
-    };
+  test('updates steps for status other than SUCCESSFUL', () => {
+    const setStepsMock = jest.fn();
+    const prevSteps = { stepOne: true, stepTwo: true };
+    updateSteps(setStepsMock, 'FAILURE');
 
-    // Mock the useNavigate hook
-    jest.mock('./useNavigate', () => () => mockNavigate);
-
-    render(<SuccessPage {...props} />);
-
-    expect(mockNavigate).not.toHaveBeenCalled();
-
-    // Advance timers by 3000ms
-    act(() => {
-      jest.advanceTimersByTime(3000);
+    expect(setStepsMock).toHaveBeenCalledWith({
+      ...prevSteps,
+      stepOne: false,
     });
-
-    expect(mockNavigate).toHaveBeenCalledWith('/custom-page');
   });
 
-  test('renders correctly with another message and navigates after delay', () => {
-    const mockNavigate = jest.fn();
-    const props = {
-      url: '/another-page',
-      message: 'Another Message',
-    };
+  test('does not update steps if status is unknown', () => {
+    const setStepsMock = jest.fn();
+    const prevSteps = { stepOne: true, stepTwo: true };
+    updateSteps(setStepsMock, 'UNKNOWN_STATUS');
 
-    // Mock the useNavigate hook
-    jest.mock('./useNavigate', () => () => mockNavigate);
-
-    render(<SuccessPage {...props} />);
-
-    expect(mockNavigate).not.toHaveBeenCalled();
-
-    // Advance timers by 3000ms
-    act(() => {
-      jest.advanceTimersByTime(3000);
-    });
-
-    expect(mockNavigate).toHaveBeenCalledWith('/another-page');
+    expect(setStepsMock).not.toHaveBeenCalled();
   });
 });
