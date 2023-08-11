@@ -1,4 +1,4 @@
-import { updateSteps } from './updateSteps'; // Adjust the path accordingly
+import { updateSteps } from './updateSteps'; 
 
 describe('updateSteps function', () => {
   test('updates steps for SUCCESSFUL status', () => {
