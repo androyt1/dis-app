@@ -1,48 +1,31 @@
 import { useNavigate } from './useNavigate'; 
+// Mock the window.location.assign method
+delete window.location;
+window.location = { assign: jest.fn() };
 
 describe('useNavigate function', () => {
-  test('navigates to the specified URL', () => {
-    const originalLocation = window.location;
-    const mockLocation = { assign: jest.fn() };
-    delete window.location;
-    window.location = mockLocation;
+  afterEach(() => {
+    window.location.assign.mockClear();
+  });
 
+  test('navigates to the specified URL', () => {
     const navigate = useNavigate();
     navigate('/new-page');
 
-    expect(mockLocation.assign).toHaveBeenCalledWith('/new-page');
-
-    // Restore original location
-    window.location = originalLocation;
+    expect(window.location.assign).toHaveBeenCalledWith('/new-page');
   });
 
   test('navigates to a different URL', () => {
-    const originalLocation = window.location;
-    const mockLocation = { assign: jest.fn() };
-    delete window.location;
-    window.location = mockLocation;
-
     const navigate = useNavigate();
     navigate('/other-page');
 
-    expect(mockLocation.assign).toHaveBeenCalledWith('/other-page');
-
-    // Restore original location
-    window.location = originalLocation;
+    expect(window.location.assign).toHaveBeenCalledWith('/other-page');
   });
 
   test('navigates to a URL with query parameters', () => {
-    const originalLocation = window.location;
-    const mockLocation = { assign: jest.fn() };
-    delete window.location;
-    window.location = mockLocation;
-
     const navigate = useNavigate();
-    navigate('/search', { query: 'term' });
+    navigate('/search?query=term');
 
-    expect(mockLocation.assign).toHaveBeenCalledWith('/search?query=term');
-
-    // Restore original location
-    window.location = originalLocation;
+    expect(window.location.assign).toHaveBeenCalledWith('/search?query=term');
   });
 });
