@@ -1,4 +1,4 @@
-import { useNavigate } from './useNavigate'; // Adjust the path accordingly
+import { useNavigate } from './useNavigate'; 
 
 describe('useNavigate function', () => {
   test('navigates to the specified URL', () => {
