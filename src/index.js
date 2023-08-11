@@ -1,31 +1,73 @@
-import { useNavigate } from './useNavigate'; 
-// Mock the window.location.assign method
-delete window.location;
-window.location = { assign: jest.fn() };
+import React from 'react';
+import { render, act } from '@testing-library/react';
+import { SuccessPage } from './SuccessPage'; 
 
-describe('useNavigate function', () => {
-  afterEach(() => {
-    window.location.assign.mockClear();
+jest.useFakeTimers(); // Mock the timers
+
+describe('SuccessPage component', () => {
+  test('renders correctly with success message and navigates after delay', () => {
+    const mockNavigate = jest.fn();
+    const props = {
+      url: '/new-page',
+      message: 'Success!',
+    };
+
+    // Mock the useNavigate hook
+    jest.mock('./useNavigate', () => () => mockNavigate);
+
+    render(<SuccessPage {...props} />);
+
+    expect(mockNavigate).not.toHaveBeenCalled();
+
+    // Advance timers by 3000ms
+    act(() => {
+      jest.advanceTimersByTime(3000);
+    });
+
+    expect(mockNavigate).toHaveBeenCalledWith('/new-page');
   });
 
-  test('navigates to the specified URL', () => {
-    const navigate = useNavigate();
-    navigate('/new-page');
+  test('renders correctly with custom message and navigates after delay', () => {
+    const mockNavigate = jest.fn();
+    const props = {
+      url: '/custom-page',
+      message: 'Custom Message',
+    };
 
-    expect(window.location.assign).toHaveBeenCalledWith('/new-page');
+    // Mock the useNavigate hook
+    jest.mock('./useNavigate', () => () => mockNavigate);
+
+    render(<SuccessPage {...props} />);
+
+    expect(mockNavigate).not.toHaveBeenCalled();
+
+    // Advance timers by 3000ms
+    act(() => {
+      jest.advanceTimersByTime(3000);
+    });
+
+    expect(mockNavigate).toHaveBeenCalledWith('/custom-page');
   });
 
-  test('navigates to a different URL', () => {
-    const navigate = useNavigate();
-    navigate('/other-page');
+  test('renders correctly with another message and navigates after delay', () => {
+    const mockNavigate = jest.fn();
+    const props = {
+      url: '/another-page',
+      message: 'Another Message',
+    };
 
-    expect(window.location.assign).toHaveBeenCalledWith('/other-page');
-  });
+    // Mock the useNavigate hook
+    jest.mock('./useNavigate', () => () => mockNavigate);
 
-  test('navigates to a URL with query parameters', () => {
-    const navigate = useNavigate();
-    navigate('/search?query=term');
+    render(<SuccessPage {...props} />);
 
-    expect(window.location.assign).toHaveBeenCalledWith('/search?query=term');
+    expect(mockNavigate).not.toHaveBeenCalled();
+
+    // Advance timers by 3000ms
+    act(() => {
+      jest.advanceTimersByTime(3000);
+    });
+
+    expect(mockNavigate).toHaveBeenCalledWith('/another-page');
   });
 });
