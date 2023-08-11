@@ -1,34 +1,48 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import { ProjectDetailsSubSection } from './ProjectDetailsSubSection'; 
+import { useNavigate } from './useNavigate'; // Adjust the path accordingly
 
-describe('ProjectDetailsSubSection component', () => {
-  test('renders correctly with loading state', () => {
-    const { getByText } = render(
-      <ProjectDetailsSubSection title="Title" value="Value" loading={true} />
-    );
+describe('useNavigate function', () => {
+  test('navigates to the specified URL', () => {
+    const originalLocation = window.location;
+    const mockLocation = { assign: jest.fn() };
+    delete window.location;
+    window.location = mockLocation;
 
-    expect(getByText('Title')).toBeInTheDocument();
-    expect(getByText('Value')).toBeInTheDocument();
-    expect(getByText('Loading...')).toBeInTheDocument();
+    const navigate = useNavigate();
+    navigate('/new-page');
+
+    expect(mockLocation.assign).toHaveBeenCalledWith('/new-page');
+
+    // Restore original location
+    window.location = originalLocation;
   });
 
-  test('renders correctly without loading state', () => {
-    const { getByText, queryByText } = render(
-      <ProjectDetailsSubSection title="Title" value="Value" loading={false} />
-    );
+  test('navigates to a different URL', () => {
+    const originalLocation = window.location;
+    const mockLocation = { assign: jest.fn() };
+    delete window.location;
+    window.location = mockLocation;
 
-    expect(getByText('Title')).toBeInTheDocument();
-    expect(getByText('Value')).toBeInTheDocument();
-    expect(queryByText('Loading...')).toBeNull();
+    const navigate = useNavigate();
+    navigate('/other-page');
+
+    expect(mockLocation.assign).toHaveBeenCalledWith('/other-page');
+
+    // Restore original location
+    window.location = originalLocation;
   });
 
-  test('renders correctly with empty value and loading state', () => {
-    const { getByText } = render(
-      <ProjectDetailsSubSection title="Title" value="" loading={true} />
-    );
+  test('navigates to a URL with query parameters', () => {
+    const originalLocation = window.location;
+    const mockLocation = { assign: jest.fn() };
+    delete window.location;
+    window.location = mockLocation;
 
-    expect(getByText('Title')).toBeInTheDocument();
-    expect(getByText('Loading...')).toBeInTheDocument();
+    const navigate = useNavigate();
+    navigate('/search', { query: 'term' });
+
+    expect(mockLocation.assign).toHaveBeenCalledWith('/search?query=term');
+
+    // Restore original location
+    window.location = originalLocation;
   });
 });
