@@ -1,53 +1,78 @@
-import { render } from '@testing-library/react';
-import { formatDateByUserLocale } from './UtilsFile'; 
+import { getValueFromObject } from './yourUtilsFile'; // Import the function from your file
 
-describe('formatDateByUserLocale', () => {
-  it('should return an empty string for an empty input', () => {
-    const result = formatDateByUserLocale('');
-    expect(result).toBe('');
+describe('getValueFromObject', () => {
+  it('should return the value for a valid path', () => {
+    const obj = {
+      a: {
+        b: {
+          c: 123,
+        },
+      },
+    };
+    const path = 'a.b.c';
+
+    const result = getValueFromObject(obj, path);
+
+    expect(result).toBe(123);
   });
 
-  it('should correctly format ISO8601 date strings', () => {
-    const iso8601DateString = '2023-08-14T12:30:45.123Z';
-    const formattedResult = formatDateByUserLocale(iso8601DateString);
+  it('should return undefined for an invalid path', () => {
+    const obj = {
+      a: {
+        b: {
+          c: 123,
+        },
+      },
+    };
+    const path = 'a.x.y';
 
-    // Mock expected date format based on user locale (adjust as needed)
-    const mockFormattedDate = '14/08/2023, 12:30:45';
+    const result = getValueFromObject(obj, path);
 
-    expect(formattedResult).toBe(mockFormattedDate);
+    expect(result).toBeUndefined();
   });
 
-  it('should correctly format non-ISO8601 date strings', () => {
-    const nonIso8601DateString = '2023-08-14 12:30:45';
-    const formattedResult = formatDateByUserLocale(nonIso8601DateString);
+  it('should return undefined for empty path', () => {
+    const obj = {
+      a: {
+        b: {
+          c: 123,
+        },
+      },
+    };
+    const path = '';
 
-    // Mock expected date format based on user locale (adjust as needed)
-    const mockFormattedDate = '14/08/2023, 12:30:45';
+    const result = getValueFromObject(obj, path);
 
-    expect(formattedResult).toBe(mockFormattedDate);
+    expect(result).toBeUndefined();
   });
 
-  it('should throw an error for invalid date strings', () => {
-    const invalidDateString = 'invalid-date';
-    
-    expect(() => {
-      formatDateByUserLocale(invalidDateString);
-    }).toThrow('Invalid date string');
+  it('should return the value for a valid nested path with null values', () => {
+    const obj = {
+      a: {
+        b: {
+          c: null,
+        },
+      },
+    };
+    const path = 'a.b.c';
+
+    const result = getValueFromObject(obj, path);
+
+    expect(result).toBeNull();
   });
 
-  it('should format the date according to user locale', () => {
-    // Mock a date string
-    const dateString = '2023-08-14T12:30:45.123Z';
-    
-    // Mock the user locale to 'en-US' (adjust as needed)
-    const { getByText } = render(
-      <div>{formatDateByUserLocale(dateString)}</div>,
-      { locale: 'en-US' }
-    );
-    
-    // Mock expected date format based on 'en-US' locale (adjust as needed)
-    const mockFormattedDate = '8/14/2023, 12:30:45 PM';
+  it('should return undefined for missing property along the path', () => {
+    const obj = {
+      a: {
+        b: {
+          c: 123,
+        },
+      },
+    };
+    const path = 'a.b.x.y.z';
 
-    expect(getByText(mockFormattedDate)).toBeInTheDocument();
+    const result = getValueFromObject(obj, path);
+
+    expect(result).toBeUndefined();
   });
 });
