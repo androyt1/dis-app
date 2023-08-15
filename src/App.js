@@ -1,88 +1,54 @@
-import { getChildProperties } from './UtilsFile';
+import React from 'react';
+import { render, fireEvent } from '@testing-library/react';
+import CustomDatePicker from './CustomDatePicker'
 
-describe('getChildProperties', () => {
-  it('should return an empty array for non-object input', () => {
-    const nonObjectInput = 'not an object';
-
-    const result = getChildProperties(nonObjectInput);
-
-    expect(result).toEqual([]);
+describe('CustomDatePicker', () => {
+  it('renders without crashing', () => {
+    render(<CustomPopover />);
   });
 
-  it('should return an empty array for null input', () => {
-    const nullInput = null;
-
-    const result = getChildProperties(nullInput);
-
-    expect(result).toEqual([]);
-  });
-
-  it('should return an array of property paths with nested properties', () => {
-    const input = {
-      properties: {
-        prop1: {
-          type: 'string',
-        },
-        nested: {
-          type: 'object',
-          properties: {
-            prop2: {
-              type: 'number',
-            },
-          },
-        },
-      },
+  it('handles date changes on chip click', () => {
+    const handleDatesMock = jest.fn();
+    const dates = {
+      start: null,
+      end: null,
     };
+    const { getByText } = render(<CustomPopover handleDates={handleDatesMock} dates={dates} />);
 
-    const result = getChildProperties(input);
+    const thisWeekChip = getByText('This week');
+    fireEvent.click(thisWeekChip);
 
-    expect(result).toEqual(['prop1', 'nested.prop2']);
+    expect(handleDatesMock).toHaveBeenCalledTimes(1);
+    expect(handleDatesMock).toHaveBeenCalledWith(expect.any(Date), expect.any(Date));
   });
 
-  it('should return an array of property paths without nested properties', () => {
-    const input = {
-      prop1: {
-        type: 'string',
-      },
-      prop2: {
-        type: 'number',
-      },
+  it('handles reset on refresh icon click', () => {
+    const resetDate = true;
+    const handleDatesMock = jest.fn();
+    const dates = {
+      start: null,
+      end: null,
     };
+    const { getByLabelText } = render(<CustomPopover handleDates={handleDatesMock} resetDate={resetDate} dates={dates} />);
 
-    const result = getChildProperties(input);
+    const refreshIcon = getByLabelText('refresh');
+    fireEvent.click(refreshIcon);
 
-    expect(result).toEqual(['prop1', 'prop2']);
+    expect(handleDatesMock).toHaveBeenCalledTimes(1);
+    expect(handleDatesMock).toHaveBeenCalledWith(null, null);
   });
 
-  it('should return an array of property paths with deeply nested properties', () => {
-    const input = {
-      properties: {
-        prop1: {
-          type: 'string',
-        },
-        nested1: {
-          type: 'object',
-          properties: {
-            nested2: {
-              type: 'object',
-              properties: {
-                nested3: {
-                  type: 'object',
-                  properties: {
-                    prop2: {
-                      type: 'number',
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    };
+  it('updates state when "selected" changes', () => {
+    const { container, rerender } = render(<CustomPopover />);
+    
+    const initialSelected = container.querySelector('.mb-5.d-block[aria-selected="true"]');
+    expect(initialSelected).toHaveTextContent('This week');
 
-    const result = getChildProperties(input);
-
-    expect(result).toEqual(['prop1', 'nested1.nested2.nested3.prop2']);
+    rerender(<CustomPopover selected="prevWeek" />);
+    
+    const updatedSelected = container.querySelector('.mb-5.d-block[aria-selected="true"]');
+    expect(updatedSelected).toHaveTextContent('Last week');
   });
+  
+  
 });
