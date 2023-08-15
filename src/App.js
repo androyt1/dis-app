@@ -1,32 +1,53 @@
-// DataDisplay.test.js
-import React from "react";
-import { render, screen } from "@testing-library/react";
-import axios from "axios";
-import MockAdapter from "axios-mock-adapter";
-import DataDisplay from "./DataDisplay";
+import { render } from '@testing-library/react';
+import { formatDateByUserLocale } from './UtilsFile'; 
 
-describe("DataDisplay component", () => {
-  // Create an instance of the axios mock adapter
-  const mock = new MockAdapter(axios);
-
-  beforeEach(() => {
-    // Mock the API response with sample data
-    const mockData = [
-      { id: 1, name: "Item 1" },
-      { id: 2, name: "Item 2" },
-    ];
-    mock.onGet("/api/data").reply(200, mockData);
-
-    // Render the component
-    render(<DataDisplay />);
+describe('formatDateByUserLocale', () => {
+  it('should return an empty string for an empty input', () => {
+    const result = formatDateByUserLocale('');
+    expect(result).toBe('');
   });
 
-  it("should display data from the API correctly", async () => {
-    // Wait for the API request to complete (you might not need this if the data is loaded synchronously)
-    await screen.findByText("Data Display");
+  it('should correctly format ISO8601 date strings', () => {
+    const iso8601DateString = '2023-08-14T12:30:45.123Z';
+    const formattedResult = formatDateByUserLocale(iso8601DateString);
 
-    // Assert that the data is displayed correctly in the component
-    expect(screen.getByText("Item 1")).toBeInTheDocument();
-    expect(screen.getByText("Item 2")).toBeInTheDocument();
+    // Mock expected date format based on user locale (adjust as needed)
+    const mockFormattedDate = '14/08/2023, 12:30:45';
+
+    expect(formattedResult).toBe(mockFormattedDate);
+  });
+
+  it('should correctly format non-ISO8601 date strings', () => {
+    const nonIso8601DateString = '2023-08-14 12:30:45';
+    const formattedResult = formatDateByUserLocale(nonIso8601DateString);
+
+    // Mock expected date format based on user locale (adjust as needed)
+    const mockFormattedDate = '14/08/2023, 12:30:45';
+
+    expect(formattedResult).toBe(mockFormattedDate);
+  });
+
+  it('should throw an error for invalid date strings', () => {
+    const invalidDateString = 'invalid-date';
+    
+    expect(() => {
+      formatDateByUserLocale(invalidDateString);
+    }).toThrow('Invalid date string');
+  });
+
+  it('should format the date according to user locale', () => {
+    // Mock a date string
+    const dateString = '2023-08-14T12:30:45.123Z';
+    
+    // Mock the user locale to 'en-US' (adjust as needed)
+    const { getByText } = render(
+      <div>{formatDateByUserLocale(dateString)}</div>,
+      { locale: 'en-US' }
+    );
+    
+    // Mock expected date format based on 'en-US' locale (adjust as needed)
+    const mockFormattedDate = '8/14/2023, 12:30:45 PM';
+
+    expect(getByText(mockFormattedDate)).toBeInTheDocument();
   });
 });
