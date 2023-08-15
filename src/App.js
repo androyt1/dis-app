@@ -1,78 +1,88 @@
-import { getValueFromObject } from './yourUtilsFile'; // Import the function from your file
+import { getChildProperties } from './UtilsFile';
 
-describe('getValueFromObject', () => {
-  it('should return the value for a valid path', () => {
-    const obj = {
-      a: {
-        b: {
-          c: 123,
-        },
-      },
-    };
-    const path = 'a.b.c';
+describe('getChildProperties', () => {
+  it('should return an empty array for non-object input', () => {
+    const nonObjectInput = 'not an object';
 
-    const result = getValueFromObject(obj, path);
+    const result = getChildProperties(nonObjectInput);
 
-    expect(result).toBe(123);
+    expect(result).toEqual([]);
   });
 
-  it('should return undefined for an invalid path', () => {
-    const obj = {
-      a: {
-        b: {
-          c: 123,
-        },
-      },
-    };
-    const path = 'a.x.y';
+  it('should return an empty array for null input', () => {
+    const nullInput = null;
 
-    const result = getValueFromObject(obj, path);
+    const result = getChildProperties(nullInput);
 
-    expect(result).toBeUndefined();
+    expect(result).toEqual([]);
   });
 
-  it('should return undefined for empty path', () => {
-    const obj = {
-      a: {
-        b: {
-          c: 123,
+  it('should return an array of property paths with nested properties', () => {
+    const input = {
+      properties: {
+        prop1: {
+          type: 'string',
+        },
+        nested: {
+          type: 'object',
+          properties: {
+            prop2: {
+              type: 'number',
+            },
+          },
         },
       },
     };
-    const path = '';
 
-    const result = getValueFromObject(obj, path);
+    const result = getChildProperties(input);
 
-    expect(result).toBeUndefined();
+    expect(result).toEqual(['prop1', 'nested.prop2']);
   });
 
-  it('should return the value for a valid nested path with null values', () => {
-    const obj = {
-      a: {
-        b: {
-          c: null,
-        },
+  it('should return an array of property paths without nested properties', () => {
+    const input = {
+      prop1: {
+        type: 'string',
+      },
+      prop2: {
+        type: 'number',
       },
     };
-    const path = 'a.b.c';
 
-    const result = getValueFromObject(obj, path);
+    const result = getChildProperties(input);
 
-    expect(result).toBeNull();
+    expect(result).toEqual(['prop1', 'prop2']);
   });
 
-  it('should return undefined for missing property along the path', () => {
-    const obj = {
-      a: {
-        b: {
-          c: 123,
+  it('should return an array of property paths with deeply nested properties', () => {
+    const input = {
+      properties: {
+        prop1: {
+          type: 'string',
+        },
+        nested1: {
+          type: 'object',
+          properties: {
+            nested2: {
+              type: 'object',
+              properties: {
+                nested3: {
+                  type: 'object',
+                  properties: {
+                    prop2: {
+                      type: 'number',
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       },
     };
-    const path = 'a.b.x.y.z';
 
-    const result = getValueFromObject(obj, path);
+    const result = getChildProperties(input);
 
-    expect(result).toBeUndefined();
+    expect(result).toEqual(['prop1', 'nested1.nested2.nested3.prop2']);
   });
 });
